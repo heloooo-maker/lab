@@ -1,2 +1,8 @@
 freelance-agency-template/
 .vagrant/
+
+# Helper scripts and secrets generated while operating the VMs - not lab deliverables
+*/*.sh
+*/*.groovy
+*/*private_key*
+*/*.json
