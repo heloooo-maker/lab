@@ -1,4 +1,6 @@
 freelance-agency-template/
+freelance-agency-gitops/
+platform-gitops/
 .vagrant/
 
 # Helper scripts and secrets generated while operating the VMs - not lab deliverables

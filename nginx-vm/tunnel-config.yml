@@ -1,7 +1,0 @@
-tunnel: afcf90cb-081e-4b64-b756-0d73910f5598
-credentials-file: /home/vagrant/.cloudflared/afcf90cb-081e-4b64-b756-0d73910f5598.json
-
-ingress:
-  - hostname: test-app-thanhlam.thanhlam.online
-    service: http://localhost:80
-  - service: http_status:404
