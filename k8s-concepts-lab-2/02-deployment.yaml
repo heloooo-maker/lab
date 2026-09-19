@@ -1,0 +1,30 @@
+# Deployment -> tạo ReplicaSet -> ReplicaSet tạo 3 Pod theo label app=web
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: lab2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: thanhlamcode/freelance-agency-template:latest
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2

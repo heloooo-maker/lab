@@ -1,0 +1,56 @@
+# Cloudflare Tunnel chạy ngay trong cluster -> expose app ra internet công khai
+# mà không cần IP public / mở port trên router (outbound-only connection tới Cloudflare)
+# Kiến trúc B: cloudflared trỏ vào Ingress Controller, để Ingress rules (06-ingress.yaml) quyết định domain nào đi Service nào
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: lab2
+data:
+  config.yaml: |
+    tunnel: 16253783-b745-4355-b807-7bf305201dd5
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    ingress:
+      - hostname: lab2.thanhlam.online
+        service: http://ingress-nginx-controller.nginx-controller.svc.cluster.local:80
+      - hostname: argocd.thanhlam.online
+        service: http://ingress-nginx-controller.nginx-controller.svc.cluster.local:80
+      - service: http_status:404
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: lab2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudflared
+  template:
+    metadata:
+      labels:
+        app: cloudflared
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          args:
+            - tunnel
+            - --config
+            - /etc/cloudflared/config.yaml
+            - run
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared
+              readOnly: true
+            - name: creds
+              mountPath: /etc/cloudflared/creds
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: cloudflared-config
+        - name: creds
+          secret:
+            secretName: cloudflared-tunnel-credentials
